@@ -136,10 +136,10 @@ main$lsg_education_v4 <- make_lsg(main,
 
 # Shelter/NFI +
 
-main$shelter_issues <- make_lsg(main,
-                                crit_to_4plus = c("shelter_issues_2"),
-                                crit_to_3 = c("shelter_issues_1")
-                                )
+# main$shelter_issues <- make_lsg(main,
+#                                 crit_to_4plus = c("shelter_issues_2"),
+#                                 crit_to_3 = c("shelter_issues_1")
+#                                 )
 main$lsg_shelter_nfi <- make_lsg(main,
                                  crit_to_4plus = c(
                                    "shelter_type",
@@ -286,10 +286,20 @@ col_ccia_v3 <- c(
   "lsg_food_security"
 )
 
+col_ccia_base <- c(
+  "lsg_livelihoods",
+  "lsg_wash",
+  "lsg_education",
+  "lsg_shelter_nfi",
+  "lsg_protection",
+  "lsg_health",
+  "lsg_food_security"
+)
 
 
 
-main$ccia_v3 <- do.call(pmax, c(main[ , col_ccia_v3], na.rm = TRUE))
+
+main$ccia_v3 <- do.call(pmax, c(main[ , col_ccia_base], na.rm = TRUE))
 
 
 data.list$main <- main

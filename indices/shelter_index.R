@@ -204,6 +204,7 @@ nfis_j25_undef <- c(
   "J_25_miss_nfi/prefer_not_to_answer"
 )
 
+
 snfi <- data.list$main %>%
   mutate(
     shelter_type = case_when(
@@ -215,83 +216,69 @@ snfi <- data.list$main %>%
       ) ~ 4,
       (
         (G_2_shelter_situation %in% shelter_type_g2_lvl_3) |
-        (G_3_shelter_type %in% shelter_type_g3_lvl_3)
+          (G_3_shelter_type %in% shelter_type_g3_lvl_3)
       ) ~ 3,
       (
         (G_2_shelter_situation %in% shelter_type_g2_lvl_2) &
-        (G_3_shelter_type %in% shelter_type_g3_lvl_1)
+          (G_3_shelter_type %in% shelter_type_g3_lvl_1)
       ) ~ 2,
       (
-        (G_2_shelter_situation %in% shelter_type_g2_lvl_1) |
-        (G_3_shelter_type %in% shelter_type_g3_lvl_1)
+        (G_2_shelter_situation %in% shelter_type_g2_lvl_1) &
+          (G_3_shelter_type %in% shelter_type_g3_lvl_1)
       ) ~ 1,
       (
         (G_2_shelter_situation %in% shelter_type_g2_lvl_undef) |
-        (G_3_shelter_type %in% shelter_type_g3_lvl_undef)
-      ) ~ NA,
-      TRUE ~ -1
+          (G_3_shelter_type %in% shelter_type_g3_lvl_undef)|
+          is.na(G_3_shelter_type)
+      ) ~ NA
     ),
     issue_g8_cnt = rowSums(across(shelter_issues_g8, as.numeric),na.rm = TRUE),
     g8_undef_cnt = rowSums(across(shelter_issues_g8_undef, as.numeric),na.rm = TRUE),
-    shelter_issues_1 = case_when(
-      (
-        as.numeric(`G_8_shelter_issues/none`) == 1
-      ) ~ 1,
-      (
-        (issue_g8_cnt > 0) & (issue_g8_cnt < 3)
-      ) ~ 2,
-      (
-        (issue_g8_cnt > 2) & (issue_g8_cnt < 11)
-      ) ~ 3,
-      g8_undef_cnt > 0 | issue_g8_cnt == 0 ~ NA,
-      TRUE ~ -1
-    ),
+    
     issue_g9_cnt = rowSums(across(shelter_issues_g9, as.numeric),na.rm = TRUE),
     g9_undef_cnt = rowSums(across(shelter_issues_g9_undef, as.numeric),na.rm = TRUE),
-    shelter_issues_2 = case_when(
-      #(issue_g9_cnt+g9_undef_cnt == 0) ~ NA,
-      (
-        G_10_shelter_assess %in% shelter_issues_g10_lvl4
-      ) ~ 5,
-      (
-        as.numeric(`G_9_curr_shelter_damage/none`) == 1
-      ) ~ 1,
-      (
-        (issue_g9_cnt > 2 & issue_g9_cnt < 6) &
-        (G_10_shelter_assess %in% shelter_issues_g10_lvl3)
-      ) ~ 4,
-      (
-        (
-          (issue_g9_cnt > 2 & issue_g9_cnt < 6) &
-          (G_10_shelter_assess %in% shelter_issues_g10_lvl2)
-        ) |
-        (
-          (issue_g9_cnt > 0 & issue_g9_cnt < 3) &
-          (G_10_shelter_assess %in% shelter_issues_g10_lvl3)
-        )
-      ) ~ 3,
-      (
-        (issue_g9_cnt > 0 & issue_g9_cnt < 3) &
-        (G_10_shelter_assess %in% shelter_issues_g10_lvl2)
-      ) ~ 2,
+    
+
+    shelter_issues = case_when(
+      (G_10_shelter_assess %in% shelter_issues_g10_lvl4 & 
+         between(issue_g9_cnt,3,5)) ~ 5,
+      
+      (G_10_shelter_assess %in% shelter_issues_g10_lvl3 & 
+         between(issue_g9_cnt,3,5)) |
+        (G_10_shelter_assess %in% shelter_issues_g10_lvl4 & 
+           between(issue_g9_cnt,1,2)) ~ 4,
+      
+      ((issue_g8_cnt > 2) & (issue_g8_cnt < 11)) |
+        (between(issue_g9_cnt,3,5) & G_10_shelter_assess %in% shelter_issues_g10_lvl2) |
+        (between(issue_g9_cnt,1,2) & G_10_shelter_assess %in% shelter_issues_g10_lvl3) ~ 3,
+      
+      
+      between(issue_g8_cnt,1,2) |
+      ((issue_g9_cnt > 0 & issue_g9_cnt < 3) &
+         (G_10_shelter_assess %in% shelter_issues_g10_lvl2)) ~ 2,
+      
+      as.numeric(`G_9_curr_shelter_damage/none`) %in% 1 & 
+        as.numeric(`G_8_shelter_issues/none`) %in% 1  ~ 1,
+      
       (as.numeric(`G_9_curr_shelter_damage/none`) == 1) ~ 1,
       (g9_undef_cnt > 0 | is.na(G_10_shelter_assess) | is.na(`G_9_curr_shelter_damage/none`)) ~ NA,
-      TRUE ~ -1
     ),
+
+    
     security_tenure = case_when(
       (G_6_occupancy_arrang %in% security_tenure_g6_high) ~ 3,
       (
         (G_6_occupancy_arrang %in% security_tenure_g6_low) &
-        (G_7_evict_risk == "yes")
+          (G_7_evict_risk == "yes")
       ) ~ 2,
       (
         (G_6_occupancy_arrang %in% security_tenure_g6_low) &
-        (G_7_evict_risk == "no")
+          (G_7_evict_risk == "no")
       ) ~ 1,
       (
         (G_6_occupancy_arrang %in% security_tenure_g6_undef) |
-        (G_7_evict_risk %in% c("dont_know", "prefer_not_to_answer")) |
-        is.na(G_6_occupancy_arrang) | is.na(G_7_evict_risk)
+          (G_7_evict_risk %in% c("dont_know", "prefer_not_to_answer")) |
+          is.na(G_6_occupancy_arrang) | is.na(G_7_evict_risk)
       ) ~ NA,
       TRUE ~ -1
     ),
@@ -304,15 +291,15 @@ snfi <- data.list$main %>%
       ) ~ 4,
       (
         G_15_electricity_issues %in% leccy_g15_lvl4 &
-        g13_irr_cnt > 0
+          g13_irr_cnt > 0
       ) ~ 3,
       (
         G_15_electricity_issues %in% leccy_g15_lvl2 &
-        g13_irr_cnt > 0
+          g13_irr_cnt > 0
       ) ~ 2,
       (
         G_15_electricity_issues == "none" &
-        g13_irr_cnt > 0
+          g13_irr_cnt > 0
       ) ~ 1,
       g13_undef_cnt > 0 | is.na(G_15_electricity_issues) | G_15_electricity_issues %in% leccy_g15_undef | uuid == "299771dc-a256-4c11-8867-bd028c8eb0f2" ~ NA,
       TRUE ~ -1
@@ -320,63 +307,64 @@ snfi <- data.list$main %>%
     g16_lvl3_cnt = rowSums(across(utility_g16_lvl3, as.numeric),na.rm = TRUE),
     g16_lvl2_cnt = rowSums(across(utility_g16_lvl2, as.numeric),na.rm = TRUE),
     g16_undef_cnt = rowSums(across(utility_g16_undef, as.numeric),na.rm = TRUE),
+    
     utility = case_when(
-      (g16_lvl3_cnt > 0) ~ NA,#3,
       (g16_lvl2_cnt > 0) ~ 2,
       (as.numeric(`G_16_utility_interrupt/none`) == 1) ~ 1,
-      g16_undef_cnt > 0 | is.na(`G_16_utility_interrupt/none`) ~ NA,
+      g16_undef_cnt > 0 | is.na(`G_16_utility_interrupt/none`) | g16_lvl3_cnt > 0 ~ NA ,
       TRUE ~ -1
     ),
+    
     g11_cunt = ifelse(G_11_cook_issues == "no_cannot_do", 1, 0),
     g12_cunt = ifelse(G_12_sleep_issues == "no_cannot_do", 1, 0),
     g14_cunt = ifelse(G_14_food_store_issues == "no_cannot_do", 1, 0),
     g11_yi = ifelse(G_11_cook_issues == "yes_with_issues", 1, 0),
     g12_yi = ifelse(G_12_sleep_issues == "yes_with_issues", 1, 0),
     g14_yi = ifelse(G_14_food_store_issues == "yes_with_issues", 1, 0),
+    
+    g11_ni = ifelse(G_11_cook_issues %in% c("yes_without_any_issues",'no_do_not_need_to_cook_in_current_shelter'), 1, 0),
+    g12_ni = ifelse(G_12_sleep_issues == "yes_without_any_issues", 1, 0),
+    g14_ni = ifelse(G_14_food_store_issues == "yes_without_any_issues", 1, 0),
+    
+    
     domestic = case_when(
-      (
-        (G_11_cook_issues %in% leccy_g15_undef | is.na(G_11_cook_issues))
+      
+      ((g11_cunt + g12_cunt + g14_cunt) > 1) ~ 4,
+      
+      (((g11_yi + g12_yi + g14_yi) > 1 & (g11_ni + g12_ni + g14_ni)<=1 ) |
+         ((g11_cunt + g12_cunt + g14_cunt) == 1)) ~ 3,
+      
+      ((g11_yi + g12_yi + g14_yi) == 1 & (g11_ni + g12_ni + g14_ni)==2) ~ 2,
+      
+      ((G_11_cook_issues %in% c("yes_without_any_issues", "no_do_not_need_to_cook_in_current_shelter")) &
+          (G_12_sleep_issues %in% c("yes_without_any_issues")) &
+          (G_14_food_store_issues %in% c("yes_without_any_issues"))) ~ 1,
+      
+      ((G_11_cook_issues %in% leccy_g15_undef | is.na(G_11_cook_issues))
         | (G_12_sleep_issues %in% leccy_g15_undef | is.na(G_12_sleep_issues))
-        | (G_14_food_store_issues %in% leccy_g15_undef | is.na(G_14_food_store_issues))
-      ) ~ NA,
-      (
-        (g11_cunt + g12_cunt + g14_cunt) > 1
-      ) ~ 4,
-      (
-        (
-          (g11_yi + g12_yi + g14_yi) > 1
-        ) |
-        (
-          (g11_cunt + g12_cunt + g14_cunt) == 1
-        )
-      ) ~ 3,
-      (
-        (g11_yi + g12_yi + g14_yi) == 1
-      ) ~ 2,
-      (
-        (G_11_cook_issues %in% c("yes_without_any_issues", "no_do_not_need_to_cook_in_current_shelter")) &
-        (G_12_sleep_issues %in% c("yes_without_any_issues")) &
-        (G_14_food_store_issues %in% c("yes_without_any_issues"))
-      ) ~ 1,
-      TRUE ~ -1
-    ),
+        | (G_14_food_store_issues %in% leccy_g15_undef | is.na(G_14_food_store_issues))) ~ NA
+      
+      ),
+    
     j25_lvl3_cnt = rowSums(across(nfis_j25_lvl3, as.numeric),na.rm = TRUE),
     j25_lvl2_cnt = rowSums(across(nfis_j25_lvl2, as.numeric),na.rm = TRUE),
     j25_irr_cnt = rowSums(across(nfis_j25_irr, as.numeric),na.rm = TRUE),
     j25_undef_cnt = rowSums(across(nfis_j25_undef, as.numeric),na.rm = TRUE),
+    
     nfis = case_when(
       (j25_lvl3_cnt > 0) ~ 3,
-      (j25_lvl2_cnt > 0) ~ 2,
-      (
-        (as.numeric(`J_25_miss_nfi/none`) == 1) |
-        is.na(`J_25_miss_nfi/none`) |
-        (j25_irr_cnt > 0)
-      ) ~ 1,
+      
+      (j25_lvl2_cnt > 0)  ~ 2,
+      
+      ((as.numeric(`J_25_miss_nfi/none`) == 1) |
+          is.na(`J_25_miss_nfi/none`) |
+          (j25_irr_cnt > 0)) ~ 1,
+      
       j25_undef_cnt > 0 ~ NA,
       TRUE ~ -1
     )
   ) %>%
-  select(uuid, shelter_type, shelter_issues_1, shelter_issues_2, security_tenure, leccy, utility, domestic, nfis)
+  select(uuid, shelter_type, shelter_issues, security_tenure, leccy, utility, domestic,J_25_miss_nfi, nfis)
 
 data.list$main <- data.list$main %>%
   left_join(snfi, by = "uuid")
