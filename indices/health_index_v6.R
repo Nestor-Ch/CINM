@@ -8,7 +8,6 @@ health_crit_1_var_3_lvl_2_ls <- c("consultation_or_drugs_for_chronic_illness",
 health_crit_1_var_3_lvl_2_delivery <- c("safe_delivery_services",'consultation_or_drugs_for_acute_illness')
 
 
-
 health_crit_1_var_3_lvl_3_ls <- c("trauma_care","emergency_life_saving_surgery")
 
 health_crit_1_var_3_undef_ls <- c("dont_know", "prefer_not_to_answer")
@@ -35,7 +34,7 @@ health_crit_var_3_undef <- c("D_9_medicines_type/dont_know", "D_9_medicines_type
 health_crit_5_var_1_lvl_1 <- c('D_12_medicines_barriers/none','D_12_medicines_barriers/time_necessary_to_access_the_services__access_medicine')
 
 health_crit_5_var_1_lvl_2 <- c('D_12_medicines_barriers/transport_necessary_get_to_services_access_medicine',
-                               'D_12_medicines_barriers/other',
+                               'D_12_medicines_b arriers/other',
                                'D_12_medicines_barriers/dont_know',
                                'D_12_medicines_barriers/prefer_not_to_answer')
 
@@ -49,6 +48,50 @@ health_crit_5_var_1_lvl_4 <- c('D_12_medicines_barriers/security_concerns',
                                'D_12_medicines_barriers/lack_of_medical_facilities_facilities_difficult_to_access',
                                'D_12_medicines_barriers/lack_of_pharmacies_pharmacies_difficult_to_access',
                                'D_12_medicines_barriers/refusal_to_provide_service_medicine')
+
+######
+
+health_crit_5_var_met_lvl_1 <- c('D_12_medicines_barriers/none',
+                                 'D_12_medicines_barriers/time_necessary_to_access_the_services__access_medicine',
+                                 'D_12_medicines_barriers/transport_necessary_get_to_services_access_medicine')
+
+health_crit_5_var_unmet_lvl_1 <- c('D_12_medicines_barriers/none',
+                                 'D_12_medicines_barriers/time_necessary_to_access_the_services__access_medicine')
+
+health_crit_5_var_unmet_lvl_2 <- c('D_12_medicines_barriers/other',
+                                   'D_12_medicines_barriers/dont_know',
+                                   'D_12_medicines_barriers/transport_necessary_get_to_services_access_medicine')
+
+
+health_crit_5_var_met_lvl_2 <- c('D_12_medicines_barriers/other',
+                                 'D_12_medicines_barriers/dont_know',
+                                 'D_12_medicines_barriers/needed_services_medicine_were_not_available',
+                                 'D_12_medicines_barriers/need_for_unofficial_payments',
+                                 'D_12_medicines_barriers/cost_of_treatment',
+                                 'D_12_medicines_barriers/cost_of_medicine')
+
+health_crit_5_var_unmet_lvl_2 <- c('D_12_medicines_barriers/other',
+                                   'D_12_medicines_barriers/dont_know',
+                                   'D_12_medicines_barriers/transport_necessary_get_to_services_access_medicine')
+
+health_crit_5_var_met_lvl_3 <- c('D_12_medicines_barriers/not_have_needed_documents',
+                                 'D_12_medicines_barriers/lack_of_medical_facilities_facilities_difficult_to_access',
+                                 'D_12_medicines_barriers/lack_of_pharmacies_pharmacies_difficult_to_access',
+                                 'D_12_medicines_barriers/refusal_to_provide_service_medicine')
+
+health_crit_5_var_unmet_lvl_3 <- c('D_12_medicines_barriers/cost_of_medicine',
+                                   'D_12_medicines_barriers/cost_of_treatment',
+                                   'D_12_medicines_barriers/need_for_unofficial_payments',
+                                   'D_12_medicines_barriers/needed_services_medicine_were_not_available')
+
+health_crit_5_var_met_lvl_4 <- c('D_12_medicines_barriers/security_concerns')
+
+health_crit_5_var_unmet_lvl_4 <- c('D_12_medicines_barriers/security_concerns',
+                                   'D_12_medicines_barriers/not_have_needed_documents',
+                                   'D_12_medicines_barriers/lack_of_medical_facilities_facilities_difficult_to_access',
+                                   'D_12_medicines_barriers/lack_of_pharmacies_pharmacies_difficult_to_access',
+                                   'D_12_medicines_barriers/refusal_to_provide_service_medicine')
+
 
 
 
@@ -101,7 +144,8 @@ health_data_prel <- data.list$loop_demographics %>%
 
 names_to_drop <- setdiff(names(health_data_prel),'uuid')
 
-data.list$main <- data.list$main %>% 
+data.list$main <- 
+  data.list$main %>% 
   left_join(health_data_prel) %>% 
   mutate(
     health_crit_1 = case_when(
@@ -121,7 +165,7 @@ data.list$main <- data.list$main %>%
         health_crit_1_var_1_need > 0 &
           health_crit_1_var_3_lvl_1_obtained == member) ~1,
       
-      health_crit_1_var_1_undef > 0 | health_crit_1_var_2_undef > 0 | health_crit_1_var_3_undef > 0 ~ NA_real_
+      health_crit_1_var_1_undef > 0 | health_crit_1_var_2_undef > 0 | health_crit_1_var_3_undef > 0 ~ NA_real_,
     ),
     
     
@@ -176,47 +220,76 @@ data.list$main <- data.list$main %>%
       is.na(D_2_health_trasport_length) ~ NA_real_
     ),
     
-    health_crit_5 = case_when(
-      rowSums(across(all_of(health_crit_5_var_1_lvl_4) , .fns = as.numeric), na.rm = T) > 0 ~ 4, 
+    needs_met_unmet = case_when(
+      D_8_medicinces_obtained %in% 'no' | health_crit_1_var_2_notobtained > 0 ~ 'unmet',
       
-      rowSums(across(all_of(health_crit_5_var_1_lvl_3) , .fns = as.numeric), na.rm = T) > 0 &
-        rowSums(across(all_of(health_crit_5_var_1_lvl_4) , .fns = as.numeric), na.rm = T) == 0 ~ 3,
+      (health_crit_1_var_2_obtained == health_crit_1_var_1_need & D_8_medicinces_obtained %in% 'yes') |
+        (health_crit_1_var_1_need == 0) |
+        (health_crit_1_var_2_obtained == health_crit_1_var_1_need &
+           (D_8_medicinces_obtained %in% c('prefer_not_to_answer','dont_know') | is.na(D_8_medicinces_obtained))) |
+        (health_crit_1_var_2_undef == health_crit_1_var_1_need &
+           D_8_medicinces_obtained %in% c('yes')) ~ 'met',
       
-      rowSums(across(all_of(health_crit_5_var_1_lvl_2) , .fns = as.numeric), na.rm = T) > 0 &
-        rowSums(across(all_of(health_crit_5_var_1_lvl_3) , .fns = as.numeric), na.rm = T) == 0 &
-        rowSums(across(all_of(health_crit_5_var_1_lvl_4) , .fns = as.numeric), na.rm = T) == 0 ~ 2,
-      
-      rowSums(across(all_of(health_crit_5_var_1_lvl_1) , .fns = as.numeric), na.rm = T) > 0 |
-        is.na(D_12_medicines_barriers) ~ 1
+      (D_8_medicinces_obtained %in% c('prefer_not_to_answer','dont_know') | is.na(D_8_medicinces_obtained))  & 
+        health_crit_1_var_2_undef == health_crit_1_var_1_need ~ NA_character_
+      # ,
+      # 
+      # 
+      # TRUE ~ '-1'
     ),
     
-    health_crit_6 = case_when(
-      (rowSums(across(all_of(c('D_15_felt_stressed','D_16_depressed_mood','D_17_anxious')), ~ .x %in% 'yes'))== 3 &
-         (K_2_first %in% 'household_members_feeling_very_distressed_upset_sad_worried_scared_or_angry' |
-            K_2_second %in% 'household_members_feeling_very_distressed_upset_sad_worried_scared_or_angry' |
-            K_2_third %in% 'household_members_feeling_very_distressed_upset_sad_worried_scared_or_angry')
-      ) ~ 3,
+    
+    health_crit_5 = case_when(
+      ((rowSums(across(all_of(health_crit_5_var_met_lvl_4) , .fns = as.numeric), na.rm = T) > 0 & needs_met_unmet %in% c("met")) |
+         (rowSums(across(all_of(health_crit_5_var_unmet_lvl_4) , .fns = as.numeric), na.rm = T) > 0 & needs_met_unmet %in% c("unmet"))) ~ 4,
       
+      ((rowSums(across(all_of(health_crit_5_var_met_lvl_3) , .fns = as.numeric), na.rm = T) > 0 & needs_met_unmet %in% c("met")) |
+         (rowSums(across(all_of(health_crit_5_var_unmet_lvl_3) , .fns = as.numeric), na.rm = T) > 0 & needs_met_unmet %in% c("unmet"))) ~ 3,
       
-      rowSums(across(all_of(c('D_15_felt_stressed','D_16_depressed_mood','D_17_anxious')), ~ .x %in% 'yes')) <=2  &
-        rowSums(across(all_of(c('D_15_felt_stressed','D_16_depressed_mood','D_17_anxious')), ~ .x %in% 'yes')) >0  &
-        (K_2_first %in% 'household_members_feeling_very_distressed_upset_sad_worried_scared_or_angry' |
-           K_2_second %in% 'household_members_feeling_very_distressed_upset_sad_worried_scared_or_angry' |
-           K_2_third %in% 'household_members_feeling_very_distressed_upset_sad_worried_scared_or_angry')~ 2,
+      ((rowSums(across(all_of(health_crit_5_var_met_lvl_2) , .fns = as.numeric), na.rm = T) > 0 & needs_met_unmet %in% c("met")) |
+      (rowSums(across(all_of(health_crit_5_var_unmet_lvl_2) , .fns = as.numeric), na.rm = T) > 0 & needs_met_unmet %in% c("unmet"))) ~ 2,
       
-      (D_15_felt_stressed  %in% 'no' & D_16_depressed_mood %in% 'no' &  D_17_anxious  %in% 'no') |
-        (rowSums(across(all_of(c('D_15_felt_stressed','D_16_depressed_mood','D_17_anxious')), ~ .x %in% 'yes')) >0 &
-           ! K_2_first %in% 'household_members_feeling_very_distressed_upset_sad_worried_scared_or_angry' &
-           ! K_2_second %in% 'household_members_feeling_very_distressed_upset_sad_worried_scared_or_angry' &
-           ! K_2_third %in% 'household_members_feeling_very_distressed_upset_sad_worried_scared_or_angry'
-        ) ~ 1,
+      (rowSums(across(all_of(health_crit_5_var_met_lvl_1) , .fns = as.numeric), na.rm = T) > 0 & needs_met_unmet %in% c("met")) |
+      (rowSums(across(all_of(health_crit_5_var_unmet_lvl_1) , .fns = as.numeric), na.rm = T) > 0 & needs_met_unmet %in% c("unmet")) |
+      (member - health_crit_1_var_1_noneed == 0 & `D_7_medicines_sought` == 'no') |
+      (health_crit_1_var_1_need + health_crit_1_var_1_undef == 0 & (D_7_medicines_sought == 'dont_know' | D_7_medicines_sought =='prefer_not_to_answer')) |
+      (health_crit_1_var_1_need + health_crit_1_var_1_noneed == 0 | D_7_medicines_sought == "no") |
+      is.na(D_12_medicines_barriers) ~ 1,
       
-      D_15_felt_stressed  %in% c('prefer_not_to_answer','dont_know') |
-        D_16_depressed_mood %in% c('prefer_not_to_answer','dont_know') | 
-        D_17_anxious  %in% c('prefer_not_to_answer','dont_know') |
-        is.na(D_15_felt_stressed) | is.na(D_16_depressed_mood) | is.na(D_17_anxious) ~ NA_real_)
+      needs_met_unmet %in% NA | D_12_medicines_barriers == "prefer_not_to_answer" ~ NA_real_,
+      
+      TRUE ~ -1
+        
+    )
+    
+    # health_crit_6 = case_when(
+    #   (rowSums(across(all_of(c('D_15_felt_stressed','D_16_depressed_mood','D_17_anxious')), ~ .x %in% 'yes'))== 3 &
+    #      (K_2_first %in% 'household_members_feeling_very_distressed_upset_sad_worried_scared_or_angry' |
+    #         K_2_second %in% 'household_members_feeling_very_distressed_upset_sad_worried_scared_or_angry' |
+    #         K_2_third %in% 'household_members_feeling_very_distressed_upset_sad_worried_scared_or_angry')
+    #   ) ~ 3,
+    #   
+    #   
+    #   rowSums(across(all_of(c('D_15_felt_stressed','D_16_depressed_mood','D_17_anxious')), ~ .x %in% 'yes')) <=2  &
+    #     rowSums(across(all_of(c('D_15_felt_stressed','D_16_depressed_mood','D_17_anxious')), ~ .x %in% 'yes')) >0  &
+    #     (K_2_first %in% 'household_members_feeling_very_distressed_upset_sad_worried_scared_or_angry' |
+    #        K_2_second %in% 'household_members_feeling_very_distressed_upset_sad_worried_scared_or_angry' |
+    #        K_2_third %in% 'household_members_feeling_very_distressed_upset_sad_worried_scared_or_angry')~ 2,
+    #   
+    #   (D_15_felt_stressed  %in% 'no' & D_16_depressed_mood %in% 'no' &  D_17_anxious  %in% 'no') |
+    #     (rowSums(across(all_of(c('D_15_felt_stressed','D_16_depressed_mood','D_17_anxious')), ~ .x %in% 'yes')) >0 &
+    #        ! K_2_first %in% 'household_members_feeling_very_distressed_upset_sad_worried_scared_or_angry' &
+    #        ! K_2_secnond %in% 'household_members_feeling_very_distressed_upset_sad_worried_scared_or_angry' &
+    #        ! K_2_third %in% 'household_members_feeling_very_distressed_upset_sad_worried_scared_or_angry'
+    #     ) ~ 1,
+    #   
+    #   D_15_felt_stressed  %in% c('prefer_not_to_answer','dont_know') |
+    #     D_16_depressed_mood %in% c('prefer_not_to_answer','dont_know') | 
+    #     D_17_anxious  %in% c('prefer_not_to_answer','dont_know') |
+    #     is.na(D_15_felt_stressed) | is.na(D_16_depressed_mood) | is.na(D_17_anxious) ~ NA_real_)
   ) %>% 
   select(-all_of(names_to_drop)) 
+
 
 
 

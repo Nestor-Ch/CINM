@@ -9,6 +9,32 @@ main <- data.list$main
 # Livelihoods (all) +
 
 
+# main$lsg_livelihoods <- make_lsg(main,
+#                                     crit_to_4 = c("income_source",
+#                                                   "income_quantity",
+#                                                   "coping"
+#                                     )
+# )
+# 
+# 
+# main$lsg_livelihoods_v2 <- make_lsg(main,
+#                                  crit_to_4 = c("income_source",
+#                                                "coping"
+#                                                ),
+#                                  crit_to_3 = c(
+#                                    "income_quantity_v2"
+#                                  )
+#                                  )
+# 
+# main$lsg_livelihoods_v3 <- make_lsg(main,
+#                                     crit_to_4 = c("income_source",
+#                                                   "income_quantity_v3",
+#                                                   "coping"
+#                                     )
+# )
+
+
+
 main$lsg_livelihoods <- make_lsg(main,
                                     crit_to_4 = c("income_source",
                                                   "income_quantity",
@@ -17,50 +43,24 @@ main$lsg_livelihoods <- make_lsg(main,
 )
 
 
-main$lsg_livelihoods_v2 <- make_lsg(main,
-                                 crit_to_4 = c("income_source",
-                                               "coping"
-                                               ),
-                                 crit_to_3 = c(
-                                   "income_quantity_v2"
-                                 )
-                                 )
-
-main$lsg_livelihoods_v3 <- make_lsg(main,
-                                    crit_to_4 = c("income_source",
-                                                  "income_quantity_v3",
-                                                  "coping"
-                                    )
-)
-
-
-
-main$lsg_livelihoods_v4 <- make_lsg(main,
-                                    crit_to_4 = c("income_source",
-                                                  "income_quantity_v4",
-                                                  "coping"
-                                    )
-)
-
-
 
 # WASH +
 
-
-main$lsg_wash <- make_lsg(main,
-                          crit_to_4plus = c(
-                            "wash_crit_1",
-                            "wash_crit_2",
-                            "wash_crit_3"
-                          ),
-                          crit_to_4 = c(
-                            "wash_crit_4",
-                            "wash_crit_5",
-                            "wash_crit_6",
-                            "wash_crit_7"
-                          )
-)
-
+# 
+# main$lsg_wash <- make_lsg(main,
+#                           crit_to_4plus = c(
+#                             "wash_crit_1",
+#                             "wash_crit_2",
+#                             "wash_crit_3"
+#                           ),
+#                           crit_to_4 = c(
+#                             "wash_crit_4",
+#                             "wash_crit_5",
+#                             "wash_crit_6",
+#                             "wash_crit_7"
+#                           )
+# )
+# 
 
 
 
@@ -68,7 +68,7 @@ main$lsg_wash <- make_lsg(main,
 # WASH 2 +
 
 
-main$lsg_wash_v2 <- make_lsg(main,
+main$lsg_wash <- make_lsg(main,
                              crit_to_4plus = c(
                                "wash_crit_1",
                                "wash_crit_2",
@@ -76,59 +76,59 @@ main$lsg_wash_v2 <- make_lsg(main,
                              ),
                              crit_to_4 = c(
                                "wash_crit_4",
-                               "wash_crit_5",
                                "wash_crit_7"
-                             )
+                             ),
+                             crit_to_3 = c('wash_crit_5')
 )
 
 
 # Education
 
 
-main$lsg_education <- make_lsg(main,
-                               crit_to_4 = c(
-                                 "educ_crit_1",
-                                 "educ_crit_2"
-                                 ),
-                               crit_to_3 = c(
-                                 "educ_crit_3"
-                               )
-)
-
+# main$lsg_education <- make_lsg(main,
+#                                crit_to_4 = c(
+#                                  "educ_crit_1",
+#                                  "educ_crit_2"
+#                                  ),
+#                                crit_to_3 = c(
+#                                  "educ_crit_3"
+#                                )
+# )
+# 
 
 # Education 2
 
 
-main$lsg_education_v2 <- make_lsg(main,
-                               crit_to_4 = c(
-                                 "educ_crit_1"),
-                               crit_to_3 = c(
-                                 "educ_crit_3"
-                               )
-)
-
+# main$lsg_education_v2 <- make_lsg(main,
+#                                crit_to_4 = c(
+#                                  "educ_crit_1"),
+#                                crit_to_3 = c(
+#                                  "educ_crit_3"
+#                                )
+# )
+# 
 # Education 3
 
 
-main$lsg_education_v3 <- make_lsg(main,
-                                  crit_to_4 = c(
-                                    "educ_crit_1",
-                                    "educ_crit_2"),
-                                  crit_to_3 = c(
-                                    "educ_crit_3"
-                                  )
-)
+# main$lsg_education_v3 <- make_lsg(main,
+#                                   crit_to_4 = c(
+#                                     "educ_crit_1",
+#                                     "educ_crit_2"),
+#                                   crit_to_3 = c(
+#                                     "educ_crit_3"
+#                                   )
+# )
 
 
 # Education 4
 
 
-main$lsg_education_v4 <- make_lsg(main,
+main$lsg_education <- make_lsg(main,
                                   crit_to_4 = c(
                                     "educ_crit_1",
-                                    "educ_crit_2"),
+                                    "educ_crit_3"),
                                   crit_to_3 = c(
-                                    "educ_crit_3"
+                                    "educ_crit_2"
                                   )
 )
 
@@ -140,6 +140,8 @@ main$lsg_education_v4 <- make_lsg(main,
 #                                 crit_to_4plus = c("shelter_issues_2"),
 #                                 crit_to_3 = c("shelter_issues_1")
 #                                 )
+
+
 main$lsg_shelter_nfi <- make_lsg(main,
                                  crit_to_4plus = c(
                                    "shelter_type",
@@ -151,9 +153,9 @@ main$lsg_shelter_nfi <- make_lsg(main,
                                  ),
                                  crit_to_3 = c(
                                    "security_tenure",
-                                   "utility",
                                    "nfis"
-                                 )
+                                 ),
+                                 crit_to_2 = 'utility'
                                  )
 
 
@@ -182,38 +184,55 @@ main$lsg_protection <- make_lsg(main,
 
 # Health
 
-main$lsg_health <- make_lsg(main,
-                            crit_to_4 = c(
-                              "health_crit_1",
-                              "health_crit_3",
-                              "health_crit_5"
-                              ),
-                            crit_to_3 = c(
-                              "health_crit_2",
-                              "health_crit_4",
-                              "health_crit_6"
-                            )
-                            )
+# main$lsg_health <- make_lsg(main,
+#                             crit_to_4 = c(
+#                               "health_crit_1",
+#                               "health_crit_3",
+#                               "health_crit_5"
+#                               ),
+#                             crit_to_3 = c(
+#                               "health_crit_2",
+#                               "health_crit_4",
+#                               "health_crit_6"
+#                             )
+#                             )
 
 
 # Health 2
 
-main$lsg_health_v2 <- make_lsg(main,
-                            crit_to_4 = c(
-                              "health_crit_1",
-                              "health_crit_3",
-                              "health_crit_5"
-                            ),
-                            crit_to_3 = c(
-                              "health_crit_2",
-                              "health_crit_4"
-                            )
-)
+# main$lsg_health_v2 <- make_lsg(main,
+#                             crit_to_4 = c(
+#                               "health_crit_1",
+#                               "health_crit_3",
+#                               "health_crit_5"
+#                             ),
+#                             crit_to_3 = c(
+#                               "health_crit_2",
+#                               "health_crit_4"
+#                             )
+# )
 
 
 # Health 4
 
-main$lsg_health_v4 <- make_lsg(main,
+# main$lsg_health_v4 <- make_lsg(main,
+#                                crit_to_4plus = c(
+#                                  "health_crit_1"
+#                                ),
+#                                crit_to_4 = c(
+#                                  "health_crit_3",
+#                                  "health_crit_5"
+#                                ),
+#                                crit_to_3 = c(
+#                                  "health_crit_2",
+#                                  #"health_crit_4",
+#                                  "health_crit_6"
+#                                )
+#                       )
+
+# Health 6
+
+main$lsg_health <- make_lsg(main,
                                crit_to_4plus = c(
                                  "health_crit_1"
                                ),
@@ -223,26 +242,7 @@ main$lsg_health_v4 <- make_lsg(main,
                                ),
                                crit_to_3 = c(
                                  "health_crit_2",
-                                 #"health_crit_4",
-                                 "health_crit_6"
-                               )
-                      )
-
-# Health 5
-
-main$lsg_health_v5 <- make_lsg(main,
-                               crit_to_4plus = c(
-                                 "health_crit_1"
-                               ),
-                               crit_to_4 = c(
-                                 "health_crit_3",
-                                 "health_crit_5"
-                               ),
-                               crit_to_3 = c(
-                                 "health_crit_2",
-                                 "health_crit_4",
-                                 "health_crit_6"
-                               )
+                                 "health_crit_4")
 )
 
 
@@ -276,17 +276,7 @@ main <- main %>%
 
 
 
-col_ccia_v3 <- c(
-  "lsg_livelihoods_v4",
-  "lsg_wash_v2",
-  "lsg_education_v4",
-  "lsg_shelter_nfi",
-  "lsg_protection",
-  "lsg_health_v4",
-  "lsg_food_security"
-)
-
-col_ccia_base <- c(
+col_ccia_v4 <- c(
   "lsg_livelihoods",
   "lsg_wash",
   "lsg_education",
@@ -296,10 +286,20 @@ col_ccia_base <- c(
   "lsg_food_security"
 )
 
+# col_ccia_base <- c(
+#   "lsg_livelihoods",
+#   "lsg_wash",
+#   "lsg_education",
+#   "lsg_shelter_nfi",
+#   "lsg_protection",
+#   "lsg_health",
+#   "lsg_food_security"
+# )
 
 
 
-main$ccia_v3 <- do.call(pmax, c(main[ , col_ccia_base], na.rm = TRUE))
+
+main$ccia <- do.call(pmax, c(main[ , col_ccia_v4], na.rm = TRUE))
 
 
 data.list$main <- main

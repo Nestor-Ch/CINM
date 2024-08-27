@@ -43,3 +43,22 @@ for(sheet in sheet_names[-1])
 
 tool_choices <- load.tool.choices('resources/MSNA_2024_Kobo_tool_F2F.xlsx','label::English')
 tool_survey <- load.tool.survey('resources/MSNA_2024_Kobo_tool_F2F.xlsx','label::English')
+
+
+
+# load 100 km
+
+df_km <- read.xlsx('data/MSNA2403_2024_final_anonymized_data_29July2024_weighted_new_30km_and_100km (1).xlsx') %>% 
+  select(uuid,`30km_fl_rb`, prox_30_100_fl)
+
+
+data.list[['main']] <- data.list[['main']] %>% select(-`30km_fl_rb`)
+data.list[['main']] <- data.list[['main']] %>% left_join(df_km)
+
+
+
+
+
+
+
+

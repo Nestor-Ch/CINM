@@ -29,6 +29,6 @@ params  <- c(
 options(scipen = 999)
 rm(list=ls()[!ls() %in% c("params", "strings")])
 
-source("src/init.R")
-source("src/max_lsg.R")
-# source("src/format_dataset.R")
+source("src_R/init.R")
+source("src_R/max_lsg.R")
+source("src_R/format_dataset.R")

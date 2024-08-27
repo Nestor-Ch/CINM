@@ -10,7 +10,7 @@ crit_1_q2_level_4 <- c('protection_risks_while_at_or_traveling_to_the_school','m
 
 
 
-educ_data_prel <- data.list$loop_demographics %>% 
+educ_data_prel <- data$loop_demographics %>% 
   mutate(
     child = ifelse(between(as.numeric(B_5_hh_mem_age), 5,18),1,0),
     
@@ -44,7 +44,7 @@ names_to_drop <- setdiff(names(educ_data_prel),'uuid')
 
 
 
-data.list$main <- data.list$main %>% 
+data$main <- data$main %>% 
   left_join(educ_data_prel) %>% 
   mutate(
     educ_crit_1 = case_when(

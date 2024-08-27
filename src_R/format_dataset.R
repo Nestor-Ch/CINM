@@ -9,16 +9,23 @@ print('Running the LSGs')
 
 source('indices/livelihoods_index.R') # CHECK LIVELIHOOD CRIT_3
 source('indices/protection_index.R')
-source('indices/education_index.R') # CHECK
+source('indices/education_index_v4.R') # CHECK
 source('indices/shelter_index.R') # CHECK SHELTER CRIT_3
-source('indices/health_index.R')
-source('indices/wash_index.R') # CHECK WASH CRIT_1
+source('indices/health_index_v6.R')
+source('indices/wash_index_v4.R') # CHECK WASH CRIT_1
 
 source('indices/lsg_msni.R')
 
+# source('daf_creator.R')
 
-# -------------------------------- intercrossing --------------------------------------
+# write.xlsx(data.list, 'data/MSNA2403_2024_final_anonymized_data_19July2024_weighted_index_added.xlsx')
 
+
+#-------------------------------- intercrossing --------------------------------------
+if (TRUE){
+  
+
+  
 lsg_columns <- data.list$main %>% select(starts_with("lsg_")) %>% colnames
 
 lsg_no_protection <- setdiff(lsg_columns,'lsg_protection')
@@ -231,5 +238,7 @@ for (i in 1:length(list_unique)){
 
 
 
+write.xlsx(data.list, 'data/MSNA2403_2024_final_anonymized_data_19July2024_cooccurence_added.xlsx')
 
 
+}

@@ -175,12 +175,12 @@ utility_g16_undef <- c(
 
 nfis_j25_lvl3 <- c(
   "J_25_miss_nfi/winter_clothes_for_a_household_member",
-  "J_25_miss_nfi/bedding_and_towels",
   "J_25_miss_nfi/heating_appliances",
   "J_25_miss_nfi/fuel_for_heating"
 )
 
 nfis_j25_lvl2 <- c(
+  "J_25_miss_nfi/bedding_and_towels",
   #"J_25_miss_nfi/bedding_and_towels",
   #"J_25_miss_nfi/winter_clothes_for_a_household_member",
   "J_25_miss_nfi/household_items",
@@ -309,6 +309,7 @@ snfi <- data.list$main %>%
     g16_undef_cnt = rowSums(across(utility_g16_undef, as.numeric),na.rm = TRUE),
     
     utility = case_when(
+      #(g16_lvl3_cnt > 0) ~ 3,
       (g16_lvl2_cnt > 0) ~ 2,
       (as.numeric(`G_16_utility_interrupt/none`) == 1) ~ 1,
       g16_undef_cnt > 0 | is.na(`G_16_utility_interrupt/none`) | g16_lvl3_cnt > 0 ~ NA ,
@@ -364,7 +365,7 @@ snfi <- data.list$main %>%
       TRUE ~ -1
     )
   ) %>%
-  select(uuid, shelter_type, shelter_issues, security_tenure, leccy, utility, domestic,J_25_miss_nfi, nfis)
+  select(uuid, shelter_type, shelter_issues, security_tenure, leccy, utility, domestic, nfis)
 
 data.list$main <- data.list$main %>%
   left_join(snfi, by = "uuid")

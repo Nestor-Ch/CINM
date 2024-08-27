@@ -133,8 +133,7 @@ protection <- data.list$main %>%
     f2_lvl3_cnt = rowSums(across(safety_f2_lvl3, as.numeric),na.rm = TRUE),
     f2_lvl4_cnt = rowSums(across(safety_f2_lvl4, as.numeric),na.rm = TRUE),
     f2_undef_cnt = rowSums(across(safety_f2_undef, as.numeric),na.rm = TRUE),
-    hh_raions_fl_numeric = ifelse(grepl("away", `hh_raions_fl`), "0", "1"),
-    `30km_fl_rb` = ifelse(grepl("away", `hh_30km_fl`), "0", "1"),
+    # `30km_fl_rb` = ifelse(grepl("away", `hh_30km_fl`), "0", "1"),
     safety = case_when(
       (
         as.numeric(`30km_fl_rb`) == 1 &
@@ -146,8 +145,7 @@ protection <- data.list$main %>%
         )
           |
         (
-          as.numeric(`30km_fl_rb`) == 1 &
-          f2_conflict_cnt == 0
+          as.numeric(`30km_fl_rb`) == 1
         )
       ) ~ 4,
       (
@@ -157,20 +155,21 @@ protection <- data.list$main %>%
           |
         (
           f2_conflict_cnt > 0 &
-            as.numeric(`hh_raions_fl_numeric`) == 1 &
-            as.numeric(`30km_fl_rb`) == 0 
+          as.numeric(`prox_30_100_fl`) == 1
         )
       ) ~ 3,
       (
         (
-          f2_lvl2_cnt > 0 &
-          as.numeric(`30km_fl_rb`) == 0
+          f2_lvl2_cnt > 0
         )
           | 
         (
           f2_conflict_cnt > 0 &
-          as.numeric(`hh_raions_fl_numeric`) == 0 &
-          as.numeric(`30km_fl_rb`) == 0 
+            as.numeric(`prox_30_100_fl`) == 0 &
+            as.numeric(`30km_fl_rb`) == 0 
+        ) |
+        (
+          as.numeric(`prox_30_100_fl`) == 1
         )
       ) ~ 2,
       
@@ -187,21 +186,21 @@ protection <- data.list$main %>%
     barriers = case_when(
       (
         K_20_1_govern_services == "yes" &
-        k202_lvl3_cnt > 0
+          k202_lvl3_cnt > 0
       ) ~ 3,
       (
         K_20_1_govern_services == "yes" &
-        k202_lvl2_cnt > 0
+          k202_lvl2_cnt > 0
       ) ~ 2,
       (
         K_20_1_govern_services == "no" |
-        (K_20_1_govern_services == "yes" & as.numeric(`K_20_2_govern_barriers/none`) == 1)
+          (K_20_1_govern_services == "yes" & as.numeric(`K_20_2_govern_barriers/none`) == 1)
       ) ~ 1,
       (
         as.numeric(`K_20_2_govern_barriers/prefer_not_to_answer`) == 1 |
-        K_20_1_govern_services %in% c("dont_know", "prefer_not_to_answer") |
-        is.na(K_20_1_govern_services) |
-        (K_20_1_govern_services == "yes" & k202_lvl2_cnt+k202_lvl3_cnt == 0)
+          K_20_1_govern_services %in% c("dont_know", "prefer_not_to_answer") |
+          is.na(K_20_1_govern_services) |
+          (K_20_1_govern_services == "yes" & k202_lvl2_cnt+k202_lvl3_cnt == 0)
       ) ~ NA,
       TRUE ~ -1,
     ),
@@ -214,20 +213,20 @@ protection <- data.list$main %>%
       ) ~ 4,
       (
         N_level_3_cnt > 0 &
-        N_level_4_cnt == 0
+          N_level_4_cnt == 0
       ) ~ 3,
       (
         N_level_2_cnt > 0 &
-        N_level_3_cnt == 0 &
-        N_level_4_cnt == 0
+          N_level_3_cnt == 0 &
+          N_level_4_cnt == 0
       ) ~ 2,
       (
         as.numeric(`F_8_concerns_hlp/none`) == 1
       ) ~ 1,
       (
         as.numeric(`F_8_concerns_hlp/dont_know` == 1) |
-        as.numeric(`F_8_concerns_hlp/prefer_not_to_answer` == 1) |
-        is.na(`F_8_concerns_hlp`)
+          as.numeric(`F_8_concerns_hlp/prefer_not_to_answer` == 1) |
+          is.na(`F_8_concerns_hlp`)
       ) ~ NA,
       TRUE ~ -1,
     ),
@@ -241,15 +240,15 @@ protection <- data.list$main %>%
       ) ~ 3,
       (
         legal_assist_level_2_cnt > 0 &
-        legal_assist_level_3_cnt == 0
+          legal_assist_level_3_cnt == 0
       ) ~ 2,
       (
         as.numeric(`K_20_legal_assist/none`) == 1
       ) ~ 1,
       (
         as.numeric(`K_20_legal_assist/dont_know` == 1) |
-        as.numeric(`K_20_legal_assist/prefer_not_to_answer` == 1) |
-        is.na(`K_20_legal_assist`)
+          as.numeric(`K_20_legal_assist/prefer_not_to_answer` == 1) |
+          is.na(`K_20_legal_assist`)
       ) ~ NA,
       TRUE ~ -1
     ),
@@ -263,28 +262,30 @@ protection <- data.list$main %>%
       ) ~ 4,
       (
         severe > 0 &
-        very_severe == 0
+          very_severe == 0
       ) ~ 3,
       (
         non_severe > 0  &
-        severe == 0 &
-        very_severe == 0
+          severe == 0 &
+          very_severe == 0
       ) ~ 2,
       (
         `B_38_child_outside_hh` == "no"
       ) ~ 1,
       (
         is.na(`B_38_child_outside_hh`) |
-        `B_38_child_outside_hh` == "dont_know" |
-        `B_38_child_outside_hh` == "prefer_not_to_answer" |
-        `B_39_child_outside_reason` == "dont_know" |
-        `B_39_child_outside_reason` == "prefer_not_to_answer" |
-        (`B_38_child_outside_hh` != "no" & is.na(`B_39_child_outside_reason`))
+          `B_38_child_outside_hh` == "dont_know" |
+          `B_38_child_outside_hh` == "prefer_not_to_answer" |
+          `B_39_child_outside_reason` == "dont_know" |
+          `B_39_child_outside_reason` == "prefer_not_to_answer" |
+          (`B_38_child_outside_hh` != "no" & is.na(`B_39_child_outside_reason`))
       ) ~ NA,
       TRUE ~ -1
     )
   ) %>%
   select(uuid, safety, barriers, needs, legal_assist, child_sep)
+
+table(protection$safety)
 
 data.list$main <- data.list$main %>%
   left_join(protection, by = "uuid")
