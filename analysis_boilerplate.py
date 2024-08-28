@@ -29,8 +29,8 @@ weighting_column = 'weight'  # add the name of your weight column or write None 
 
 sign_check = False  # should the script check the significance of the tables?
 
-import time
-start = time.time()
+# import time
+# start = time.time()
 
 # end of the input section #
 
@@ -68,7 +68,7 @@ for sheet_name in sheets:
 # check DAF for potential issues
 print('Checking Daf for issues')
 daf = pd.read_excel(excel_path_daf, sheet_name="main")
-# daf = daf.iloc[0:500,]
+# daf = daf.iloc[0:2,]
 
 colnames_daf = set(['ID', 'variable', 'variable_label',
                     'calculation', 'func', 'admin', 'disaggregations', 'disaggregations_label', 'join'])
@@ -241,25 +241,34 @@ disaggregations_perc = deepcopy(disaggregations_full)  # percentage table
 disaggregations_count = deepcopy(disaggregations_full)  # count table
 disaggregations_count_w = deepcopy(disaggregations_full)  # weighted count table
 
+
 # remove counts prom perc table
 for element in disaggregations_perc:
-    if isinstance(element[0], pd.DataFrame):
-        if all(column in element[0].columns for column in ['category_count', 'weighted_count']):
-            element[0].drop(columns=['category_count', 'weighted_count', 'unweighted_count'], inplace=True)
+  if isinstance(element[0], pd.DataFrame):  
+    columns_to_drop = ['category_count', 'weighted_count', 'unweighted_count']
+    # Drop each column if it exists in the DataFrame
+    for column in columns_to_drop:
+      if column in element[0].columns:
+        element[0].drop(columns=column, inplace=True)
 
 # remove perc columns from weighted count table
 for element in disaggregations_count_w:
-    if isinstance(element[0], pd.DataFrame):
-        if all(column in element[0].columns for column in ['perc']):
-            element[0].drop(columns=['perc', 'unweighted_count'], inplace=True)
-        element[0].rename(columns={'weighted_count': 'category_count'}, inplace=True)
-
+  if isinstance(element[0], pd.DataFrame):  
+    columns_to_drop = ['perc', 'unweighted_count']
+    for column in columns_to_drop:
+      if column in element[0].columns:
+        element[0].drop(columns=column, inplace=True)
+    element[0].rename(columns={'weighted_count': 'category_count'}, inplace=True)
+          
 # remove perc columns from unweighted count table
 for element in disaggregations_count:
-    if isinstance(element[0], pd.DataFrame):
-        if all(column in element[0].columns for column in ['perc']):
-            element[0].drop(columns=['perc', 'weighted_count'], inplace=True)
-        element[0].rename(columns={'unweighted_count': 'category_count'}, inplace=True)
+  if isinstance(element[0], pd.DataFrame):  
+    columns_to_drop = ['perc', 'weighted_count']
+    for column in columns_to_drop:
+      if column in element[0].columns:
+        element[0].drop(columns=column, inplace=True)
+    element[0].rename(columns={'unweighted_count': 'category_count'}, inplace=True)
+
 
 # Get the columns for Analysis key table
 # concatenated_df_orig = pd.concat([tpl[0] for tpl in disaggregations_orig], ignore_index=True)
@@ -305,9 +314,10 @@ concatenated_df.loc[:, disagg_columns] = concatenated_df[disagg_columns].fillna(
 
 # Join tables if needed
 print('Joining tables if such was specified')
-disaggregations_perc_new = disaggregations_perc.copy()
-disaggregations_count_new = disaggregations_count.copy()
-disaggregations_count_w_new = disaggregations_count_w.copy()
+disaggregations_perc_new = deepcopy(disaggregations_perc)
+disaggregations_count_new = deepcopy(disaggregations_count)
+disaggregations_count_w_new = deepcopy(disaggregations_count_w)
+
 
 for data_frame in [disaggregations_perc_new, disaggregations_count_new, disaggregations_count_w_new]:
     # check if any joining is needed
@@ -406,7 +416,7 @@ filename = research_cycle + '_' + id_round + '_' + date
 
 filename_dash = 'output/' + filename + '_dashboard.xlsx'
 filename_key = 'output/' + filename + '_analysis_key.xlsx'
-filename_toc = 'output/' + filename + '_TOC'
+filename_toc = 'output/' + filename + '_TOC.xlsx'
 filename_toc_count = 'output/' + filename + '_TOC_count_unweighted.xlsx'
 filename_toc_count_w = 'output/' + filename + '_TOC_count_weighted.xlsx'
 filename_wide_toc = 'output/' + filename + '_wide_TOC.xlsx'
@@ -419,16 +429,16 @@ disaggregations_count_new = sorted(disaggregations_count_new, key=lambda x: x[1]
 print('Writing files')
 # construct the tables now
 
-construct_result_table(disaggregations_count_new, filename_toc, make_pivot_with_strata=False)
-
-# if weighting_column != None:
-#     construct_result_table(disaggregations_count_w_new, filename_toc_count_w, make_pivot_with_strata=False)
-# construct_result_table(disaggregations_count_new, filename_toc_count, make_pivot_with_strata=False)
-# construct_result_table(disaggregations_perc_new, filename_wide_toc, make_pivot_with_strata=True)
+construct_result_table(disaggregations_perc_new, filename_toc, make_pivot_with_strata=False)
+if weighting_column != None:
+    construct_result_table(disaggregations_count_w_new, filename_toc_count_w, make_pivot_with_strata=False)
+construct_result_table(disaggregations_count_new, filename_toc_count, make_pivot_with_strata=False)
+construct_result_table(disaggregations_perc_new, filename_wide_toc, make_pivot_with_strata=True)
 # concatenated_df.to_excel(filename_dash, index=False)
+
 # concatenated_df_orig.to_excel(filename_key, index=False)
 print('All done. Congratulations')
 
 
-end = time.time()
-print(end - start)
+# end = time.time()
+# print(end - start)
