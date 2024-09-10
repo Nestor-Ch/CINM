@@ -318,7 +318,9 @@ wash <- data.list$main %>%
         is.na(H_8_water_source_dom) | is.na(G_16_utility_interrupt)~ NA_real_
     )
   ) %>%
-  select(uuid, wash_crit_1, wash_crit_2, wash_crit_3, wash_crit_4, wash_crit_5,wash_crit_6, wash_crit_7)
+  select(uuid, wash_crit_1, wash_crit_2, wash_crit_3, wash_crit_4, wash_crit_5,
+         # wash_crit_6,
+         wash_crit_7)
 
 
 data.list$main <- data.list$main %>%

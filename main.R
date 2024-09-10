@@ -30,5 +30,8 @@ options(scipen = 999)
 rm(list=ls()[!ls() %in% c("params", "strings")])
 
 source("src_R/init.R")
+
+names_og <- names(data.list[[1]])
+
 source("src_R/max_lsg.R")
 source("src_R/format_dataset.R")

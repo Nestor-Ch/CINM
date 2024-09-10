@@ -14,6 +14,8 @@ source('indices/shelter_index.R') # CHECK SHELTER CRIT_3
 source('indices/health_index_v6.R')
 source('indices/wash_index_v4.R') # CHECK WASH CRIT_1
 
+names_added <- setdiff(names(data.list[[1]]), names_og)
+  
 source('indices/lsg_msni.R')
 
 # source('daf_creator.R')
@@ -216,7 +218,6 @@ for (i in 1:length(list_unique)){
 
   data.list$main[,paste0('extreme_cooccurence_',string1,'_',string2)] <- ifelse(grepl(string1, data.list$main$Merged_4_5) & grepl(string2, data.list$main$Merged_4_5),
                                                                                 'Yes','No')
-
 }
 
 
@@ -235,6 +236,34 @@ for (i in 1:length(list_unique)){
     grepl(string2, data.list$main$Merged_4_5)& grepl(string3, data.list$main$Merged_4_5), 'Yes', 'No')
 
 }
+
+
+# co-occurence analysis V2
+
+ls <- c('Shelter_NFI', 'Livelihoods', 'Health', 'Protection', 'Food Security','WASH', 'Education' )
+
+list_unique <- combn(ls, 2, simplify = FALSE)
+
+for (i in 1:length(list_unique)){
+  string1 <- list_unique[[i]][1]
+  string2 <- list_unique[[i]][2]
+  
+  data.list$main[,paste0('cooccurence_v2_',string1,'_',string2)] <- case_when(
+    !grepl(string1, data.list$main$Merged_3_4_5) ~ NA, 
+    data.list$main$Merged_3_4_5 == string1 ~ paste0(string1,' only'),
+    grepl(string1, data.list$main$Merged_3_4_5) & grepl(string2, data.list$main$Merged_3_4_5) ~ paste0(string1,' and', string2, ' cooccurence'),
+    TRUE ~ paste('Other cooccurence of',string1)
+    )
+  
+  data.list$main[,paste0('extreme_cooccurence_v2_',string1,'_',string2)] <- case_when(
+    !grepl(string1, data.list$main$Merged_4_5) ~ NA, 
+    data.list$main$Merged_4_5 == string1 ~ paste0(string1,' only'),
+    grepl(string1, data.list$main$Merged_4_5) & grepl(string2, data.list$main$Merged_4_5) ~ paste0(string1,' and', string2, ' extreme cooccurence'),
+    TRUE ~ paste('Other cooccurence of',string1)
+  )
+
+}
+
 
 
 
