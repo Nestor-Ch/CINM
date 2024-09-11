@@ -13,15 +13,15 @@ from src.functions import *
 # this is where you input stuff #
 
 # set the parameters and paths
-research_cycle = 'full_test'  # the name of your research cycle
+research_cycle = 'cooccurence_results'  # the name of your research cycle
 id_round = '1'  # the round of your research cycle
 date = datetime.today().strftime('%Y_%m_%d')
 
 parquet_inputs = True  # Whether you've transformed your data into a parquet inputs
-excel_path_data = 'data/MSNA2403_2024_final_anonymized_data_29July2024_weighted_new_30km_with_disaggregations.xlsx'  # path to your excel datafile (you may leave it blank if working with parquet inputs)
+excel_path_data = 'data/MSNA2403_2024_final_anonymized_data_19July2024_cooccurence_added_2.xlsx'  # path to your excel datafile (you may leave it blank if working with parquet inputs)
 parquet_path_data = 'data/parquet_inputs/'  # path to your parquet datafiles (you may leave it blank if working with excel input)
 
-excel_path_daf = 'resources/DAF_Final.xlsx'  # the path to your DAF file
+excel_path_daf = 'resources/cooccurence DAF.xlsx'  # the path to your DAF file
 excel_path_tool = 'resources/MSNA_2024_Kobo_tool_F2F.xlsx'  # the path to your kobo tool
 
 label_colname = 'label::English'  # the name of your label::English column. Must be identical in Kobo tool and survey sheets!

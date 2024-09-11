@@ -240,34 +240,61 @@ for (i in 1:length(list_unique)){
 
 # co-occurence analysis V2
 
+
+
 ls <- c('Shelter_NFI', 'Livelihoods', 'Health', 'Protection', 'Food Security','WASH', 'Education' )
 
-list_unique <- combn(ls, 2, simplify = FALSE)
+data.list$main$Merged_3_4_5 <- gsub('\\/','_',data.list$main$Merged_3_4_5)
+data.list$main$Merged_4_5 <- gsub('\\/','_',data.list$main$Merged_4_5)
 
-for (i in 1:length(list_unique)){
-  string1 <- list_unique[[i]][1]
-  string2 <- list_unique[[i]][2]
+for (item in ls){
+  
+  nm_ls <- gsub(' ','_',item)
+  
+  data.list$main[,paste0('cooccurence_v2_',nm_ls,'_only')] <- case_when(
+    !grepl(item, data.list$main$Merged_3_4_5) ~ NA, 
+    data.list$main$Merged_3_4_5 == item ~ 'Relevant cooccurence',
+    TRUE ~ paste('Other cooccurence of',item)
+  )
+  
+  data.list$main[,paste0('extreme_cooccurence_v2_',nm_ls,'_only')] <- case_when(
+    !grepl(item, data.list$main$Merged_4_5) ~ NA, 
+    data.list$main$Merged_4_5 == item ~ 'Relevant cooccurence',
+    TRUE ~ paste('Other extreme cooccurence of',item)
+  )
+  
+  
+}
+
+
+
+list_unique <- expand.grid(ls,ls) %>% 
+  filter(Var1 != Var2) %>% 
+  rename(var1 = Var2,
+         var2 = Var1) %>% 
+  mutate(var1 = as.character(var1),
+         var2 = as.character(var2))
+
+
+for (i in 1:nrow(list_unique)){
+  string1 <- list_unique$var1[[i]]
+  string2 <- list_unique$var2[[i]]
   
   data.list$main[,paste0('cooccurence_v2_',string1,'_',string2)] <- case_when(
     !grepl(string1, data.list$main$Merged_3_4_5) ~ NA, 
-    data.list$main$Merged_3_4_5 == string1 ~ paste0(string1,' only'),
-    grepl(string1, data.list$main$Merged_3_4_5) & grepl(string2, data.list$main$Merged_3_4_5) ~ paste0(string1,' and', string2, ' cooccurence'),
+    grepl(string1, data.list$main$Merged_3_4_5) & grepl(string2, data.list$main$Merged_3_4_5) ~ 'Relevant cooccurence',
     TRUE ~ paste('Other cooccurence of',string1)
     )
   
   data.list$main[,paste0('extreme_cooccurence_v2_',string1,'_',string2)] <- case_when(
     !grepl(string1, data.list$main$Merged_4_5) ~ NA, 
-    data.list$main$Merged_4_5 == string1 ~ paste0(string1,' only'),
-    grepl(string1, data.list$main$Merged_4_5) & grepl(string2, data.list$main$Merged_4_5) ~ paste0(string1,' and', string2, ' extreme cooccurence'),
-    TRUE ~ paste('Other cooccurence of',string1)
+    grepl(string1, data.list$main$Merged_4_5) & grepl(string2, data.list$main$Merged_4_5) ~ 'Relevant cooccurence',
+    TRUE ~ paste('Other extreme cooccurence of',string1)
   )
-
 }
 
 
-
-
-write.xlsx(data.list, 'data/MSNA2403_2024_final_anonymized_data_19July2024_cooccurence_added.xlsx')
+write.xlsx(data.list, 'data/MSNA2403_2024_final_anonymized_data_19July2024_cooccurence_added_2.xlsx')
 
 
 }
